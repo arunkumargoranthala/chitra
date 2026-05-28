@@ -7,10 +7,11 @@ const App = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize EmailJS with your public key
-  useEffect(() => {
-    // Replace with your actual EmailJS public key
-    emailjs.init("YOUR_PUBLIC_KEY");
-  }, []);
+useEffect(() => {
+  emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
+}, []);
+
+
 
   useEffect(() => {
     if (window.particlesJS) {
@@ -96,50 +97,55 @@ const App = () => {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Get form data
-    const formData = new FormData(e.target);
-    const formValues = {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      company: formData.get('company') || 'Not provided',
-      service: formData.get('service') || 'Not selected',
-      message: formData.get('message'),
-    };
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    // Prepare template parameters
-    const templateParams = {
-      to_name: "Chathura AI Team",
-      from_name: formValues.name,
-      from_email: formValues.email,
-      company_name: formValues.company,
-      service_interest: formValues.service,
-      message: formValues.message,
-      reply_to: formValues.email,
-    };
+  const formData = new FormData(e.target);
 
-    try {
-      // Replace with your actual EmailJS service ID and template ID
-      const serviceId = "YOUR_SERVICE_ID";
-      const templateId = "YOUR_TEMPLATE_ID";
-      
-      const response = await emailjs.send(serviceId, templateId, templateParams);
-      
-      if (response.status === 200) {
-        alert("Message sent successfully! Our team will be in touch within 24 hours.");
-        e.target.reset();
-      } else {
-        throw new Error("Failed to send email");
-      }
-    } catch (error) {
-      console.error("EmailJS Error:", error);
-      alert("Failed to send message. Please try again later or contact us directly at hello@chathura.ai");
-    } finally {
-      setIsSubmitting(false);
-    }
+  const formValues = {
+    name: formData.get("name"),
+    email: formData.get("email"),
+    company: formData.get("company") || "Not provided",
+    service: formData.get("service") || "Not selected",
+    message: formData.get("message"),
   };
+
+  const templateParams = {
+    to_name: "Chathura AI Team",
+    from_name: formValues.name,
+    from_email: formValues.email,
+    company_name: formValues.company,
+    service_interest: formValues.service,
+    message: formValues.message,
+    reply_to: formValues.email,
+  };
+
+  try {
+    const response = await emailjs.send(
+      import.meta.env.VITE_EMAILJS_SERVICE_ID,
+      import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      templateParams
+    );
+
+    if (response.status === 200) {
+      alert(
+        "Message sent successfully! Our team will be in touch within 24 hours."
+      );
+
+      e.target.reset();
+    } else {
+      throw new Error("Failed to send email");
+    }
+  } catch (error) {
+    console.error("EmailJS Error:", error);
+
+    alert(
+      "Failed to send message. Please try again later or contact us directly at hello@chathura.ai"
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const services = [
     {
